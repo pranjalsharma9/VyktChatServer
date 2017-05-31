@@ -1,7 +1,7 @@
 package com.pranjal.runnables;
 
 import com.pranjal.data.Data;
-import com.pranjal.models.Message;
+import com.nsit.pranjals.vykt.models.Message;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,6 +9,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by Pranjal on 31-05-2017.
@@ -70,6 +71,7 @@ public class ServeRequestRunnable implements Runnable {
     }
 
     private void serveRequest (Message message) throws IOException {
+        System.out.println("---------------------------\n" + message.toString() + "\n---------------------------");
         switch (message.type) {
             case CONNECTION_REQUEST :
                 Data.connectClient(message.sender);
@@ -78,20 +80,25 @@ public class ServeRequestRunnable implements Runnable {
                 Data.addMessage(message);
                 break;
             case RECEIVE_REQUEST :
-                for (Message messageToSend : Data.getMessages(message.sender)) {
-                    out.writeObject(messageToSend);
+                ConcurrentLinkedQueue<Message> messages = Data.getMessages(message.sender);
+                while (!messages.isEmpty()) {
+                    out.writeObject(messages.remove());
                 }
-                out.writeObject(new Message(0L, null, null,
-                        Message.MessageType.TERMINATOR, null, null));
+                out.writeObject(new Message(0L, "", "",
+                        Message.MessageType.TERMINATOR, "", Message.Expression.NEUTRAL));
+                out.flush();
                 break;
             case GET_CLIENT_LIST_REQUEST :
                 String[] clients = Data.getClientList();
-                StringBuilder builder = new StringBuilder(clients[0]);
+                StringBuilder builder = new StringBuilder("");
+                if (clients.length > 0)
+                    builder.append(clients[0]);
                 for (int i = 1; i < clients.length; i++) {
                     builder.append(";").append(clients[i]);
                 }
-                out.writeObject(new Message(0L, null, null,
-                        Message.MessageType.CLIENT_LIST_RESPONSE, builder.toString(), null));
+                out.writeObject(new Message(0L, "", "",
+                        Message.MessageType.CLIENT_LIST_RESPONSE, builder.toString(), Message.Expression.NEUTRAL));
+                out.flush();
                 break;
             case DISCONNECTION_REQUEST :
                 Data.disconnectClient(message.sender);

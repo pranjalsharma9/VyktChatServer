@@ -14,12 +14,12 @@ import java.util.concurrent.Executors;
  * and assigning resources for connections.
  */
 public class Main {
-    
+
     // THREAD POOL related stuff
     // thread pool size
     private static final int THREAD_POOL_SIZE = 10;
     // thread pool
-    public static ExecutorService threadPool;
+    private static ExecutorService threadPool;
 
     // SERVER SOCKET related stuff
     // The port number that accepts connections on the server

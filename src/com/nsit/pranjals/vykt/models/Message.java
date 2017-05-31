@@ -1,4 +1,4 @@
-package com.pranjal.models;
+package com.nsit.pranjals.vykt.models;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -12,13 +12,13 @@ import java.io.ObjectOutput;
 public class Message implements Externalizable {
 
     public enum Expression {
-        HAPPINESS,
-        SADNESS,
+        NEUTRAL,
         ANGER,
         DISGUST,
+        HAPPINESS,
         SURPRISE,
-        FEAR,
-        NEUTRAL
+        SADNESS,
+        FEAR
     }
 
     public enum MessageType {
@@ -39,6 +39,8 @@ public class Message implements Externalizable {
     public String text;
     public Expression expression;
 
+
+
     public Message(long timestamp, String sender, String receiver,
                    MessageType type, String text, Expression expression) {
         this.timestamp = timestamp;
@@ -51,11 +53,16 @@ public class Message implements Externalizable {
 
     public Message() {
         this.timestamp = 0L;
-        this.sender = null;
-        this.receiver = null;
-        this.type = null;
-        this.text = null;
-        this.expression = null;
+        this.sender = "";
+        this.receiver = "";
+        this.type = MessageType.SEND_REQUEST;
+        this.text = "";
+        this.expression = Expression.NEUTRAL;
+    }
+
+    public Message (MessageType type) {
+        this();
+        this.type = type;
     }
 
     @Override
@@ -76,6 +83,12 @@ public class Message implements Externalizable {
         type = MessageType.values()[in.readInt()];
         text = in.readUTF();
         expression = Expression.values()[in.readInt()];
+    }
+
+    @Override
+    public String toString () {
+        return "time : " + timestamp + "\nfrom : " + sender + "\nto : " + receiver +
+                "\n" + text + "\nexpression : " + expression.toString() + "\ntype : " + type.toString();
     }
 
 }

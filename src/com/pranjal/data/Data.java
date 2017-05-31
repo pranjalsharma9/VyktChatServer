@@ -1,7 +1,8 @@
 package com.pranjal.data;
 
-import com.pranjal.models.Message;
+import com.nsit.pranjals.vykt.models.Message;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +23,9 @@ public class Data {
     }
 
     public static String[] getClientList () {
-        return (String[]) messageMap.keySet().toArray();
+        Set<String> set = messageMap.keySet();
+        Object[] objects = set.toArray();
+        return Arrays.copyOf(objects, objects.length, String[].class);
     }
 
     public static ConcurrentLinkedQueue<Message> getMessages (String client) {
